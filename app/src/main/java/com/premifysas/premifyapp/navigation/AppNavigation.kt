@@ -23,9 +23,13 @@ fun AppNavigation(){
         composable(route = AppScreens.SplasScreen.route){
             SplashScreen(navController)
         }
-        composable(route = AppScreens.Login.route){
-            PpalScreen()
+        composable(route = AppScreens.PpalScreen.route){
+            PpalScreen(navController)
         }
+        composable(route = AppScreens.Login.route){
+            LoginScreen()
+        }
+
     }
 
 }
