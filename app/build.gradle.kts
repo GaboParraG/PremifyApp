@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
+
 }
 
 android {
@@ -55,9 +58,14 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.core.splashscreen)
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics.ktx)
+    implementation(libs.firebase.auth.ktx)
+
 
     implementation(libs.androidx.navigation.compose.v290)
     implementation(libs.androidx.foundation.layout.android)
+
 
     implementation(libs.constraintlayout.compose)
 

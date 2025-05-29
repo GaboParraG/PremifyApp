@@ -11,6 +11,11 @@ composeBom = "2025.05.01"
 
 hilt = "2.48"
 ksp = "2.0.21-1.0.28"
+
+firebaseBom =  "33.14.0"
+services = "4.4.2"
+crashlytics = "3.0.3"
+
 coreSplashscreen = "1.0.1"
 navigationCompose = "2.9.0"
 foundationLayoutAndroid = "1.8.2"
@@ -34,6 +39,13 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3VersionHack" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android" ,     version.ref = "hilt"}
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler" , version.ref = "hilt"}
+
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx" }
+
+
+
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-foundation-layout-android = { group = "androidx.compose.foundation", name = "foundation-layout-android", version.ref = "foundationLayoutAndroid" }
 constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version = "1.1.1" }
@@ -44,6 +56,10 @@ constraintlayout-compose = { group = "androidx.constraintlayout", name = "constr
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+googleServices = { id = "com.google.gms.google-services", version.ref = "services" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+
 hilt = { id = "com.google.dagger.hilt.android", version.ref ="hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 

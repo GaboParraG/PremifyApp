@@ -2,6 +2,7 @@ package com.premifysas.premifyapp.ppal.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -54,7 +56,7 @@ fun PpalScreen(navController: NavController) {
                 .fillMaxWidth()
                 .background(color = colorResource(id = R.color.back_color))
         ) {
-            val (boxTittle, textOne, textTwo, textThree, boxButton) = createRefs()
+            val (boxTittle, textOne, textTwo, textThree, textFour, boxButton) = createRefs()
 
             Box(
                 Modifier
@@ -148,6 +150,28 @@ fun PpalScreen(navController: NavController) {
                     fontFamily = FontFamily.Serif
                 )
             }
+            Text(
+                modifier = Modifier
+                    .clickable {
+                        navController.navigate(AppScreens.SignUp.route)
+
+                    }
+                    .padding(top = 20.dp)
+                    .constrainAs(textFour) {
+                        top.linkTo(boxButton.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+                text = "No tienes cuenta?",
+                style = TextStyle.Default.copy(
+                    colorResource(R.color.primary_color),
+                    fontSize = (20.sp),
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = Poppins,
+                    textDecoration = TextDecoration.Underline
+
+                )
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.premifysas.premifyapp.login.ui
+package com.premifysas.premifyapp.signup.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -34,15 +34,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import com.premifysas.premifyapp.R
 import com.premifysas.premifyapp.ui.theme.Poppins
 
 @Composable
-fun LoginScreen(){
+fun SingUpScreen(navController: NavController){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -79,7 +79,7 @@ fun LoginScreen(){
                         end.linkTo(parent.end)
                         bottom.linkTo(parent.bottom)
                 }
-                .size(width = 360.dp, height = 450.dp),
+                .size(width = 360.dp, height = 480.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
             ),
@@ -93,7 +93,7 @@ fun LoginScreen(){
                     .fillMaxWidth()
                 .background(color = colorResource(id = R.color.white)))
             {
-                val (textTittle, textUser, textPass, btnButton,textReb) = createRefs()
+                val (textTittle, textUser, textPass,textConfirmPass, btnButton,textReb) = createRefs()
 
                 Text(
                     modifier = Modifier
@@ -160,12 +160,36 @@ fun LoginScreen(){
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
+
+                var textConfirmPas: String by remember { mutableStateOf("") }
+                TextField(
+                    textPas,
+                    modifier = Modifier
+                        .padding(top = 40.dp)
+                        .constrainAs(textConfirmPass){
+                            top.linkTo(textPass.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        },
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor =  colorResource(id = R.color.black),
+                        unfocusedTextColor = colorResource(id = R.color.purple_500),
+                        focusedContainerColor = colorResource(id = R.color.white),
+                        unfocusedContainerColor = colorResource(id = R.color.white),
+                        disabledContainerColor = colorResource(id = R.color.white),
+                    ),
+                    onValueChange = {textConfirmPas=it},
+                    label = { Text("Confirm Password")},
+                    singleLine = true,
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                )
                 Button(modifier = Modifier
                     .padding(top = 60.dp)
                     .constrainAs(btnButton){
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    top.linkTo(textPass.bottom)
+                    top.linkTo(textConfirmPass.bottom)
                 },
                     onClick = {
                        // throw RuntimeException("Test Crash")
@@ -178,36 +202,13 @@ fun LoginScreen(){
                     )
                 ){
                     Text(
-                        text = "Ingresar",
+                        text = "Registrar",
                         fontSize = (20.sp),
                         fontFamily = FontFamily.Serif
                     )
                 }
-                Text(
-                    modifier = Modifier
-                        .padding(top = 20.dp)
-                        .constrainAs(textReb)
-                        {
-                            top.linkTo(btnButton.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                    text = "Olvido su Contraseña?",
-                    style = TextStyle.Default.copy(
-                        colorResource(R.color.black),
-                        fontSize = (15.sp),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = Poppins
-                    )
-                )
 
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun LoginScreenPreview(){
-    LoginScreen()
 }

@@ -1,16 +1,13 @@
 package com.premifysas.premifyapp.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.premifysas.premifyapp.login.ui.LoginScreen
 import com.premifysas.premifyapp.splash.ui.SplashScreen
-
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.premifysas.premifyapp.ppal.ui.PpalScreen
+import com.premifysas.premifyapp.signup.ui.SingUpScreen
 
 @Composable
 fun AppNavigation(){
@@ -28,6 +25,10 @@ fun AppNavigation(){
         }
         composable(route = AppScreens.Login.route){
             LoginScreen()
+        }
+        composable(route = AppScreens.SignUp.route) {
+            SingUpScreen(navController)
+
         }
 
     }

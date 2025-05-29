@@ -43,14 +43,7 @@ fun Splash(){
 
     ) {
         Image(painter = painterResource(id = R.drawable.vertical_azul), contentDescription ="logo" )
-        Text(
-            "Bienvenid@s",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold
-        )
     }
-
-
 }
 
 

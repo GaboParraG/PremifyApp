@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1057132255187",
+    "project_id": "premify-3f162",
+    "storage_bucket": "premify-3f162.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1057132255187:android:4765910e56d3c6714e8126",
+        "android_client_info": {
+          "package_name": "com.premifysas.premifyapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQjf22ZFC3UVtnhqtYs0Ysuv02Z68-W-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
