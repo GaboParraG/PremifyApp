@@ -6,7 +6,9 @@ import com.premifysas.premifyapp.login.ui.LoginScreen
 import com.premifysas.premifyapp.splash.ui.SplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.premifysas.premifyapp.newraffle.ui.NewRaffleScreen
 import com.premifysas.premifyapp.ppal.ui.PpalScreen
+import com.premifysas.premifyapp.raffles.RafflesScreen
 import com.premifysas.premifyapp.signup.ui.SingUpScreen
 
 @Composable
@@ -24,12 +26,19 @@ fun AppNavigation(){
             PpalScreen(navController)
         }
         composable(route = AppScreens.Login.route){
-            LoginScreen()
+            LoginScreen(navController)
         }
         composable(route = AppScreens.SignUp.route) {
             SingUpScreen(navController)
 
         }
+        composable(route = AppScreens.NewRaffle.route) {
+            NewRaffleScreen(navController)
+        }
+        composable(route = AppScreens.Raffles.route) {
+            RafflesScreen(navController)
+        }
+        composable(route = AppScreens.Profile.route) {}
 
     }
 

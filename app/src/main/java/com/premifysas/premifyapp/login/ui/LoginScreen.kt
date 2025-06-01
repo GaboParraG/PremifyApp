@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -38,11 +39,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import com.premifysas.premifyapp.R
+import com.premifysas.premifyapp.navigation.AppScreens
 import com.premifysas.premifyapp.ui.theme.Poppins
 
 @Composable
-fun LoginScreen(){
+fun LoginScreen(navController: NavController){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -125,11 +128,14 @@ fun LoginScreen(){
                             end.linkTo(parent.end)
                         },
                     colors = TextFieldDefaults.colors(
-                        focusedTextColor =  colorResource(id = R.color.black),
-                        unfocusedTextColor = colorResource(id = R.color.purple_500),
+
+                        focusedTextColor =  colorResource(id = R.color.primary_color),
+                        unfocusedTextColor = colorResource(id = R.color.primary_color),
                         focusedContainerColor = colorResource(id = R.color.white),
                         unfocusedContainerColor = colorResource(id = R.color.white),
                         disabledContainerColor = colorResource(id = R.color.white),
+                        unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
+                        focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
                     onValueChange = {textEmail=it},
                     label = { Text("E-mail")},
@@ -148,11 +154,13 @@ fun LoginScreen(){
                             end.linkTo(parent.end)
                         },
                     colors = TextFieldDefaults.colors(
-                        focusedTextColor =  colorResource(id = R.color.black),
-                        unfocusedTextColor = colorResource(id = R.color.purple_500),
+                        focusedTextColor =  colorResource(id = R.color.primary_color),
+                        unfocusedTextColor = colorResource(id = R.color.primary_color),
                         focusedContainerColor = colorResource(id = R.color.white),
                         unfocusedContainerColor = colorResource(id = R.color.white),
                         disabledContainerColor = colorResource(id = R.color.white),
+                        unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
+                        focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
                     onValueChange = {textPas=it},
                     label = { Text("Password")},
@@ -168,7 +176,7 @@ fun LoginScreen(){
                     top.linkTo(textPass.bottom)
                 },
                     onClick = {
-                       // throw RuntimeException("Test Crash")
+                        navController.navigate(AppScreens.Raffles.route)
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(id = R.color.primary_color),
@@ -204,10 +212,4 @@ fun LoginScreen(){
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun LoginScreenPreview(){
-    LoginScreen()
 }

@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -125,11 +126,13 @@ fun SingUpScreen(navController: NavController){
                             end.linkTo(parent.end)
                         },
                     colors = TextFieldDefaults.colors(
-                        focusedTextColor =  colorResource(id = R.color.black),
-                        unfocusedTextColor = colorResource(id = R.color.purple_500),
+                        focusedTextColor =  colorResource(id = R.color.primary_color),
+                        unfocusedTextColor = colorResource(id = R.color.primary_color),
                         focusedContainerColor = colorResource(id = R.color.white),
                         unfocusedContainerColor = colorResource(id = R.color.white),
                         disabledContainerColor = colorResource(id = R.color.white),
+                        unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
+                        focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
                     onValueChange = {textEmail=it},
                     label = { Text("E-mail")},
@@ -148,11 +151,13 @@ fun SingUpScreen(navController: NavController){
                             end.linkTo(parent.end)
                         },
                     colors = TextFieldDefaults.colors(
-                        focusedTextColor =  colorResource(id = R.color.black),
-                        unfocusedTextColor = colorResource(id = R.color.purple_500),
+                        focusedTextColor =  colorResource(id = R.color.primary_color),
+                        unfocusedTextColor = colorResource(id = R.color.primary_color),
                         focusedContainerColor = colorResource(id = R.color.white),
                         unfocusedContainerColor = colorResource(id = R.color.white),
                         disabledContainerColor = colorResource(id = R.color.white),
+                        unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
+                        focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
                     onValueChange = {textPas=it},
                     label = { Text("Password")},
@@ -172,11 +177,13 @@ fun SingUpScreen(navController: NavController){
                             end.linkTo(parent.end)
                         },
                     colors = TextFieldDefaults.colors(
-                        focusedTextColor =  colorResource(id = R.color.black),
-                        unfocusedTextColor = colorResource(id = R.color.purple_500),
+                        focusedTextColor =  colorResource(id = R.color.primary_color),
+                        unfocusedTextColor = colorResource(id = R.color.primary_color),
                         focusedContainerColor = colorResource(id = R.color.white),
                         unfocusedContainerColor = colorResource(id = R.color.white),
                         disabledContainerColor = colorResource(id = R.color.white),
+                        unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
+                        focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
                     onValueChange = {textConfirmPas=it},
                     label = { Text("Confirm Password")},
