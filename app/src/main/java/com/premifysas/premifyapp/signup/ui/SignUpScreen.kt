@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,12 +39,24 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.premifysas.premifyapp.R
 import com.premifysas.premifyapp.ui.theme.Poppins
 
 @Composable
-fun SingUpScreen(navController: NavController){
+fun SingUpScreen(
+    navController: NavController,
+    viewModel: SignUpViewModel = hiltViewModel(),
+    onRegistered: () -> Unit
+    ){
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+
+    val state by viewModel.registerState.collectAsState()
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -114,10 +127,8 @@ fun SingUpScreen(navController: NavController){
                 )
 
 
-                var textEmail: String by remember { mutableStateOf("") }
-
                 TextField(
-                    textEmail,
+                    email,
                     modifier = Modifier
                         .padding(top = 40.dp)
                         .constrainAs(textUser){
@@ -134,15 +145,15 @@ fun SingUpScreen(navController: NavController){
                         unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
                         focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
-                    onValueChange = {textEmail=it},
+                    onValueChange = {email=it},
                     label = { Text("E-mail")},
                     singleLine = true,
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
-                var textPas: String by remember { mutableStateOf("") }
+
                 TextField(
-                    textPas,
+                    password,
                     modifier = Modifier
                         .padding(top = 40.dp)
                         .constrainAs(textPass){
@@ -159,16 +170,16 @@ fun SingUpScreen(navController: NavController){
                         unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
                         focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
-                    onValueChange = {textPas=it},
+                    onValueChange = {password=it},
                     label = { Text("Password")},
                     singleLine = true,
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
 
-                var textConfirmPas: String by remember { mutableStateOf("") }
+
                 TextField(
-                    textPas,
+                    name,
                     modifier = Modifier
                         .padding(top = 40.dp)
                         .constrainAs(textConfirmPass){
@@ -185,11 +196,10 @@ fun SingUpScreen(navController: NavController){
                         unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
                         focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
-                    onValueChange = {textConfirmPas=it},
-                    label = { Text("Confirm Password")},
+                    onValueChange = {name=it},
+                    label = { Text("Nombre completo")},
                     singleLine = true,
-                    maxLines = 1,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                    maxLines = 1
                 )
                 Button(modifier = Modifier
                     .padding(top = 60.dp)
@@ -199,7 +209,7 @@ fun SingUpScreen(navController: NavController){
                     top.linkTo(textConfirmPass.bottom)
                 },
                     onClick = {
-                       // throw RuntimeException("Test Crash")
+                        viewModel.register(email, password, name)
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(id = R.color.primary_color),
@@ -217,5 +227,11 @@ fun SingUpScreen(navController: NavController){
 
             }
         }
+    }
+
+    if (state == "registered") {
+        onRegistered()
+    } else if (state == "error") {
+        Text("Hubo un error al registrar")
     }
 }

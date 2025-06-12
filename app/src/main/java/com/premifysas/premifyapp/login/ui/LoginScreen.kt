@@ -22,20 +22,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -43,9 +43,14 @@ import androidx.navigation.NavController
 import com.premifysas.premifyapp.R
 import com.premifysas.premifyapp.navigation.AppScreens
 import com.premifysas.premifyapp.ui.theme.Poppins
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun LoginScreen(navController: NavController){
+fun LoginScreen(
+    navController: NavController,
+    viewModel: LoginViewModel = hiltViewModel(),
+                onSuccess: () -> Unit
+) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -116,7 +121,9 @@ fun LoginScreen(navController: NavController){
                 )
 
 
-                var textEmail: String by remember { mutableStateOf("") }
+                val textEmail: String by viewModel.email.observeAsState(initial = "")
+                val password: String by viewModel.password.observeAsState(initial = "")
+                val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
 
                 TextField(
                     textEmail,
@@ -137,7 +144,7 @@ fun LoginScreen(navController: NavController){
                         unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
                         focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
-                    onValueChange = {textEmail=it},
+                    onValueChange = {viewModel.onLoginChanged(it,password)},
                     label = { Text("E-mail")},
                     singleLine = true,
                     maxLines = 1,
@@ -162,7 +169,7 @@ fun LoginScreen(navController: NavController){
                         unfocusedIndicatorColor = colorResource(id = R.color.primary_color),
                         focusedIndicatorColor = colorResource(id = R.color.primary_color)
                     ),
-                    onValueChange = {textPas=it},
+                    onValueChange = {viewModel.onLoginChanged(textEmail,it)},
                     label = { Text("Password")},
                     singleLine = true,
                     maxLines = 1,
@@ -175,8 +182,11 @@ fun LoginScreen(navController: NavController){
                     end.linkTo(parent.end)
                     top.linkTo(textPass.bottom)
                 },
+                    enabled = (loginEnable),
                     onClick = {
-                        navController.navigate(AppScreens.Raffles.route)
+                        viewModel.login(textEmail,textPas)
+                        onSuccess()
+
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(id = R.color.primary_color),
@@ -212,4 +222,12 @@ fun LoginScreen(navController: NavController){
             }
         }
     }
+
+    val loginState by viewModel.loginState.collectAsState()
+    if (loginState == "success") {
+        onSuccess()
+        navController.navigate(AppScreens.Raffles.route)
+    }
 }
+
+

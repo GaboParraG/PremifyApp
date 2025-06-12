@@ -33,6 +33,7 @@ android {
         }
     }
     compileOptions {
+
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -67,9 +68,12 @@ dependencies {
     implementation(libs.androidx.foundation.layout.android)
 
 
+
     implementation(libs.constraintlayout.compose)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.firestore.ktx)
 
-
+    implementation(libs.hilt.navigation.compose)
 
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
