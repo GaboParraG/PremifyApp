@@ -1,4 +1,4 @@
-package com.premifysas.premifyapp.ppal.ui
+package com.premifysas.premifyapp.ui.ppal
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

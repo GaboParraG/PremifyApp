@@ -1,4 +1,4 @@
-package com.premifysas.premifyapp.login.ui
+package com.premifysas.premifyapp.ui.login
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -25,9 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -36,6 +34,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -49,8 +48,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun LoginScreen(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel(),
-                onSuccess: () -> Unit
+    onSuccess: () -> Unit
 ) {
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -150,9 +150,9 @@ fun LoginScreen(
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
-                var textPas: String by remember { mutableStateOf("") }
+                val passwordBtn: String by viewModel.password.observeAsState("")
                 TextField(
-                    textPas,
+                    value = passwordBtn,
                     modifier = Modifier
                         .padding(top = 40.dp)
                         .constrainAs(textPass){
@@ -173,7 +173,8 @@ fun LoginScreen(
                     label = { Text("Password")},
                     singleLine = true,
                     maxLines = 1,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    visualTransformation = PasswordVisualTransformation(),
                 )
                 Button(modifier = Modifier
                     .padding(top = 60.dp)
@@ -184,15 +185,14 @@ fun LoginScreen(
                 },
                     enabled = (loginEnable),
                     onClick = {
-                        viewModel.login(textEmail,textPas)
-                        onSuccess()
-
+                        println("LOGIN BUTTON PRESSED")
+                        viewModel.login(textEmail,passwordBtn)
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(id = R.color.primary_color),
                         contentColor = colorResource(id = R.color.white),
-                        disabledContainerColor = colorResource(id = R.color.white),
-                        disabledContentColor = colorResource(id = R.color.secondary_color)
+                        disabledContainerColor = colorResource(id = R.color.back_color),
+                        disabledContentColor = colorResource(id = R.color.white)
                     )
                 ){
                     Text(
@@ -224,9 +224,35 @@ fun LoginScreen(
     }
 
     val loginState by viewModel.loginState.collectAsState()
-    if (loginState == "success") {
+    val isAdmin by viewModel.isAdmin.collectAsState()
+
+    if (loginState == "success" && isAdmin == null) {
+        viewModel.checkIfUserIsAdmin()
+    }
+
+    if (isAdmin != null) {
         onSuccess()
-        navController.navigate(AppScreens.Raffles.route)
+        viewModel.clearLoginState()
+        if (isAdmin == true) {
+            navController.navigate(AppScreens.Raffles.route)
+        } else {
+            navController.navigate(AppScreens.ActiveRaffles.route)
+        }
+    }
+
+    val isLoading by viewModel.isLoading.observeAsState(false)
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = colorResource(id = R.color.white).copy(alpha = 0.6f)), // semitransparente
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = colorResource(id = R.color.primary_color),
+                strokeWidth = 4.dp
+            )
+        }
     }
 }
 

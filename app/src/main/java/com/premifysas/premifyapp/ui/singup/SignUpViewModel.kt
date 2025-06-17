@@ -1,4 +1,4 @@
-package com.premifysas.premifyapp.signup.ui
+package com.premifysas.premifyapp.ui.singup
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth

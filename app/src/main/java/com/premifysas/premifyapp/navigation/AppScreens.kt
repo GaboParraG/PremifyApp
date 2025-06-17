@@ -7,6 +7,8 @@ sealed class AppScreens (val route: String) {
     object  Login: AppScreens("Login")
     object  SignUp: AppScreens("SignUp")
     object  NewRaffle: AppScreens("NewRaffle")
+    object  RaffleDetail: AppScreens("RaffleDetail")
+    object  ActiveRaffles: AppScreens("ActiveRaffles")
     object  Raffles: AppScreens("Raffles")
     object  Profile: AppScreens("Profile")
 

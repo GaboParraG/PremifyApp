@@ -3,15 +3,16 @@ package com.premifysas.premifyapp.navigation
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
-import com.premifysas.premifyapp.login.ui.LoginScreen
-import com.premifysas.premifyapp.splash.ui.SplashScreen
+import com.premifysas.premifyapp.ui.login.LoginScreen
+import com.premifysas.premifyapp.ui.splash.SplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.premifysas.premifyapp.login.ui.LoginViewModel
-import com.premifysas.premifyapp.newraffle.ui.NewRaffleScreen
-import com.premifysas.premifyapp.ppal.ui.PpalScreen
-import com.premifysas.premifyapp.raffles.RafflesScreen
-import com.premifysas.premifyapp.signup.ui.SingUpScreen
+import com.premifysas.premifyapp.ui.newraffle.NewRaffleScreen
+import com.premifysas.premifyapp.ui.ppal.PpalScreen
+import com.premifysas.premifyapp.ui.raffles.RafflesScreen
+import com.premifysas.premifyapp.ui.singup.SingUpScreen
+import com.premifysas.premifyapp.ui.raffleDetail.RaffleDetailScreen
+import com.premifysas.premifyapp.ui.raffles.ActiveRafflesScreen
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
@@ -47,13 +48,18 @@ fun AppNavigation(){
                     }
                 }
                 )
-
         }
         composable(route = AppScreens.NewRaffle.route) {
             NewRaffleScreen(navController)
         }
+        composable(route = AppScreens.RaffleDetail.route) {
+            RaffleDetailScreen(navController)
+        }
         composable(route = AppScreens.Raffles.route) {
             RafflesScreen(navController)
+        }
+        composable(route = AppScreens.ActiveRaffles.route) {
+            ActiveRafflesScreen(navController)
         }
         composable(route = AppScreens.Profile.route) {}
 
