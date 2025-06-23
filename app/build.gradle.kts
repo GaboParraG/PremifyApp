@@ -74,6 +74,9 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
 
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.firebase.storage.ktx)
+
+    implementation(libs.coil.compose)
 
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)

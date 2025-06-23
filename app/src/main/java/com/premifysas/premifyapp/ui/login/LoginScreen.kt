@@ -3,6 +3,7 @@ package com.premifysas.premifyapp.ui.login
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -50,6 +52,8 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onSuccess: () -> Unit
 ) {
+
+    val loginErrorMessage by viewModel.loginErrorMessage.collectAsState()
 
     ConstraintLayout(
         modifier = Modifier
@@ -138,6 +142,8 @@ fun LoginScreen(
 
                         focusedTextColor =  colorResource(id = R.color.primary_color),
                         unfocusedTextColor = colorResource(id = R.color.primary_color),
+                        focusedLabelColor = colorResource(id = R.color.primary_color),
+                        unfocusedLabelColor =  colorResource(id = R.color.primary_color),
                         focusedContainerColor = colorResource(id = R.color.white),
                         unfocusedContainerColor = colorResource(id = R.color.white),
                         disabledContainerColor = colorResource(id = R.color.white),
@@ -162,6 +168,8 @@ fun LoginScreen(
                         },
                     colors = TextFieldDefaults.colors(
                         focusedTextColor =  colorResource(id = R.color.primary_color),
+                        focusedLabelColor = colorResource(id = R.color.primary_color),
+                        unfocusedLabelColor =  colorResource(id = R.color.primary_color),
                         unfocusedTextColor = colorResource(id = R.color.primary_color),
                         focusedContainerColor = colorResource(id = R.color.white),
                         unfocusedContainerColor = colorResource(id = R.color.white),
@@ -203,6 +211,9 @@ fun LoginScreen(
                 }
                 Text(
                     modifier = Modifier
+                        .clickable {
+                            navController.navigate(AppScreens.ForgotPassword.route)
+                        }
                         .padding(top = 20.dp)
                         .constrainAs(textReb)
                         {
@@ -212,10 +223,12 @@ fun LoginScreen(
                         },
                     text = "Olvido su Contraseña?",
                     style = TextStyle.Default.copy(
-                        colorResource(R.color.black),
-                        fontSize = (15.sp),
+                        colorResource(R.color.primary_color),
+                        fontSize = (20.sp),
                         fontWeight = FontWeight.Medium,
-                        fontFamily = Poppins
+                        fontFamily = Poppins,
+                        textDecoration = TextDecoration.Underline
+
                     )
                 )
 
@@ -253,6 +266,19 @@ fun LoginScreen(
                 strokeWidth = 4.dp
             )
         }
+    }
+
+    if (loginErrorMessage != null) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { viewModel.clearLoginError() },
+            title = { Text("Error de inicio de sesión") },
+            text = { Text(loginErrorMessage ?: "") },
+            confirmButton = {
+                Button(onClick = { viewModel.clearLoginError() }) {
+                    Text("Aceptar")
+                }
+            }
+        )
     }
 }
 

@@ -1,8 +1,12 @@
 package com.premifysas.premifyapp.ui.raffleDetail
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -13,8 +17,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -25,19 +32,29 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.premifysas.premifyapp.R
+import com.premifysas.premifyapp.customs.MiTopAppBar
 import com.premifysas.premifyapp.model.Raffle
+import com.premifysas.premifyapp.navigation.AppScreens
 import com.premifysas.premifyapp.ui.theme.Poppins
 
 
@@ -45,7 +62,12 @@ import com.premifysas.premifyapp.ui.theme.Poppins
 @Composable
 fun RaffleDetailScreen(navController: NavController) {
 
+    val db = Firebase.firestore
+    val lockedNumbers = remember { mutableStateOf(setOf<Int>()) }
+
     val selectedNumbers = remember { mutableStateOf(mutableSetOf<Int>()) }
+    val isButtonEnabled by remember { derivedStateOf { selectedNumbers.value.isNotEmpty() } }
+
     val raffle = navController.previousBackStackEntry
         ?.savedStateHandle
         ?.get<Raffle>("raffle")
@@ -54,38 +76,25 @@ fun RaffleDetailScreen(navController: NavController) {
         Text("No se pudo cargar la rifa.")
         return
     }
+    val viewModel: RafflesDetailViewModel = hiltViewModel()
+    val usedNumbers by viewModel.usedNumbers
+
+    LaunchedEffect(raffle.name) {
+        viewModel.loadUsedNumbers(raffle.name)
+    }
+
+    LaunchedEffect(Unit) {
+        db.collection("selected_numbers").get().addOnSuccessListener { result ->
+            val allLocked = result.flatMap { it.get("numbers") as? List<Long> ?: emptyList() }
+                .map { it.toInt() }
+                .toSet()
+            lockedNumbers.value = allLocked
+        }
+    }
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.vertical_azul),
-                        contentDescription = null
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Menu"
-                        )
-                    }
-                },
-                actions = {
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = "Opciones"
-                    )
-                },
-                colors = TopAppBarColors(
-                    containerColor = colorResource(id = R.color.primary_color),
-                    scrolledContainerColor = colorResource(id = R.color.back_color),
-                    navigationIconContentColor = colorResource(id = R.color.white),
-                    titleContentColor = colorResource(id = R.color.white),
-                    actionIconContentColor = colorResource(id = R.color.white)
-                )
-            )
+            MiTopAppBar(navController)
         },
         bottomBar = {
             Box(
@@ -96,8 +105,20 @@ fun RaffleDetailScreen(navController: NavController) {
                 contentAlignment = Alignment.Center
             ){
                 androidx.compose.material3.Button(
-                    onClick = { /* Acción de continuar */ },
-                    modifier = Modifier.fillMaxWidth()
+                    onClick = {
+                        navController.currentBackStackEntry?.savedStateHandle?.set("selectedNumbers", selectedNumbers.value.toList())
+                        navController.currentBackStackEntry?.savedStateHandle?.set("raffleName", raffle.name)
+                        navController.navigate(AppScreens.ConfirmRaffle.route)
+                    },
+                    enabled = isButtonEnabled, // 🔑 Aquí lo controlas
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.primary_color),
+                        contentColor = colorResource(id = R.color.white),
+                        disabledContainerColor = colorResource(id = R.color.back_color),
+                        disabledContentColor = colorResource(id = R.color.white)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(text = "Continuar")
                 }
@@ -130,22 +151,50 @@ fun RaffleDetailScreen(navController: NavController) {
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
                 elevation = CardDefaults.cardElevation(6.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = colorResource(id = R.color.back_color) // Fondo personalizado
+                ),
+                border = BorderStroke(1.dp, colorResource(id = R.color.primary_color))
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = raffle.name, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                    Text(text = "Premio: ${raffle.prize}", fontSize = 16.sp)
-                    Text(text = "Costo: ${raffle.cost}", fontSize = 16.sp)
-                    Text(text = "Fecha: ${raffle.date}", fontSize = 16.sp)
-                    Text(text = "Método de pago: ${raffle.payment_method}", fontSize = 16.sp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Column(
+                        modifier = Modifier.weight(1f), // ocupa el máximo espacio posible
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(text = raffle.name, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "Premio: ${raffle.prize}", fontSize = 16.sp)
+                        Text(text = "Costo: ${raffle.cost}", fontSize = 16.sp)
+                        Text(text = "Fecha: ${raffle.date}", fontSize = 16.sp)
+                        Text(text = "Método de pago: ${raffle.payment_method}", fontSize = 16.sp)
+                    }
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_azul), // asegúrate de tener esta imagen en res/drawable
+                        contentDescription = "Imagen de rifa",
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape)
+                    )
                 }
+
+
             }
             // Card con números
             Card(
                 modifier = Modifier
                     .fillMaxSize(),
                 elevation = CardDefaults.cardElevation(4.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = colorResource(id = R.color.back_color) // Fondo personalizado
+                ),
+                border = BorderStroke(1.dp, colorResource(id = R.color.primary_color))
             ) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(5),
@@ -155,28 +204,35 @@ fun RaffleDetailScreen(navController: NavController) {
                     content = {
                         items(100) { index ->
                             val number = index + 1
-                            val isSelected = number in selectedNumbers.value
+//                            val isLocked = number in lockedNumbers.value
+//                            val isSelected = number in selectedNumbers.value
+//                            val isUsed = usedNumbers.contains(number)
+//                            val isDisabled = isLocked || isUsed
+
+                            val isUsed = usedNumbers.contains(number)
+                            val isSelected = selectedNumbers.value.contains(number)
 
                             Card(
                                 modifier = Modifier
                                     .padding(6.dp)
                                     .size(50.dp)
-                                    .clickable {
-                                        if (isSelected) {
-                                            selectedNumbers.value.remove(number)
-                                        } else {
-                                            selectedNumbers.value.add(number)
-                                        }
-                                        // Actualiza el estado manualmente porque es un Set mutable
-                                        selectedNumbers.value = selectedNumbers.value.toMutableSet()
-                                    },
+                                    .then(
+                                        if (!isUsed)
+                                            Modifier.clickable {
+                                                val updated = selectedNumbers.value.toMutableSet()
+                                                if (isSelected) updated.remove(number) else updated.add(number)
+                                                selectedNumbers.value = updated
+                                            }
+                                        else Modifier
+                                    ),
                                 shape = CircleShape,
                                 elevation = CardDefaults.cardElevation(2.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = if (isSelected)
-                                        colorResource(id = R.color.primary_color)
-                                    else
-                                        colorResource(id = R.color.white)
+                                    containerColor = when {
+                                        isUsed -> Color.Gray
+                                        isSelected -> colorResource(id = R.color.primary_color)
+                                        else -> colorResource(id = R.color.white)
+                                    }
                                 )
                             ) {
                                 Box(
@@ -185,13 +241,16 @@ fun RaffleDetailScreen(navController: NavController) {
                                 ) {
                                     Text(
                                         text = number.toString(),
-                                        color = if (isSelected)
-                                            colorResource(id = R.color.white)
-                                        else
-                                            colorResource(id = R.color.black)
+                                        color = when {
+                                            isUsed -> Color.White
+                                            isSelected -> colorResource(id = R.color.white)
+                                            else -> colorResource(id = R.color.black)
+                                        }
                                     )
                                 }
                             }
+
+
                         }
                     }
                 )

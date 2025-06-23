@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +40,9 @@ class LoginViewModel @Inject constructor(
     private val _isAdmin = MutableStateFlow<Boolean?>(null)
     val isAdmin: StateFlow<Boolean?> = _isAdmin
 
+    private val _loginErrorMessage = MutableStateFlow<String?>(null)
+    val loginErrorMessage: StateFlow<String?> = _loginErrorMessage
+
     fun onLoginChanged(email: String, password:String) {
         _email.value = email
         _password.value = password
@@ -54,9 +58,17 @@ class LoginViewModel @Inject constructor(
             try {
                 auth.signInWithEmailAndPassword(email, password).await()
                 _loginState.value = "success"
+                _loginErrorMessage.value = null // Limpia errores previos
             } catch (e: Exception) {
+                val errorMessage = when ((e as? FirebaseAuthException)?.errorCode) {
+                    "ERROR_WRONG_PASSWORD" -> "La contraseña es incorrecta."
+                    "ERROR_USER_NOT_FOUND" -> "No existe una cuenta con este correo."
+                    "ERROR_NETWORK_REQUEST_FAILED" -> "Error de red. Intenta nuevamente."
+                    else -> "Ocurrió un error al iniciar sesión."
+                }
                 _loginState.value = "error"
-            } finally {
+                _loginErrorMessage.value = errorMessage
+            }finally {
                 _isLoading.value = false
             }
         }
@@ -68,6 +80,9 @@ class LoginViewModel @Inject constructor(
 
     fun clearLoginState() {
         _loginState.value = null
+    }
+    fun clearLoginError() {
+        _loginErrorMessage.value = null
     }
 
     fun checkIfUserIsAdmin() {

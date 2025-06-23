@@ -14,4 +14,3 @@ data class Raffle(
     val type_number: String = "",
     var status: Boolean = false
 ): Serializable
-//ActiveRafflesScreen

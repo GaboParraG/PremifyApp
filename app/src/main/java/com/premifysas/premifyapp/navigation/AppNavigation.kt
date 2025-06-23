@@ -7,6 +7,8 @@ import com.premifysas.premifyapp.ui.login.LoginScreen
 import com.premifysas.premifyapp.ui.splash.SplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.premifysas.premifyapp.resetpassword.ResetPasswordScreen
+import com.premifysas.premifyapp.ui.confirmraffle.ConfirmRaffleScreen
 import com.premifysas.premifyapp.ui.newraffle.NewRaffleScreen
 import com.premifysas.premifyapp.ui.ppal.PpalScreen
 import com.premifysas.premifyapp.ui.raffles.RafflesScreen
@@ -61,7 +63,14 @@ fun AppNavigation(){
         composable(route = AppScreens.ActiveRaffles.route) {
             ActiveRafflesScreen(navController)
         }
+        composable(route = AppScreens.ConfirmRaffle.route) {
+            ConfirmRaffleScreen(navController)
+        }
         composable(route = AppScreens.Profile.route) {}
+
+        composable(AppScreens.ForgotPassword.route) {
+            ResetPasswordScreen(navController)
+        }
 
     }
 

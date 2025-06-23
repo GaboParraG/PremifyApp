@@ -1,16 +1,23 @@
 package com.premifysas.premifyapp.ui.raffles
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
@@ -29,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -38,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.premifysas.premifyapp.R
+import com.premifysas.premifyapp.customs.MiTopAppBar
 import com.premifysas.premifyapp.navigation.AppScreens
 import com.premifysas.premifyapp.ui.theme.Poppins
 
@@ -61,39 +70,10 @@ fun ActiveRafflesScreen(
     Scaffold(
 
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {  Icon(
-                    painter = painterResource(id = R.drawable.vertical_azul),
-                    contentDescription = null
-                ) },
-                navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Menu"
-                        )
-
-                    }
-
-                },
-                actions = {
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = "Menu"
-                    )
-                },
-                colors = TopAppBarColors(
-                    containerColor = colorResource(id = R.color.primary_color),
-                    scrolledContainerColor = colorResource(id = R.color.back_color),
-                    navigationIconContentColor = colorResource(id = R.color.white),
-                    titleContentColor = colorResource(id = R.color.white),
-                    actionIconContentColor = colorResource(id = R.color.white)
-                )
-            )
+            MiTopAppBar(navController)
         }
     )
     { paddingValues ->
-
 
         Column(
             modifier = Modifier
@@ -125,7 +105,6 @@ fun ActiveRafflesScreen(
                     )
                 }
             } else {
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -138,19 +117,29 @@ fun ActiveRafflesScreen(
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
                                 .clickable {
-                                    navController.currentBackStackEntry?.savedStateHandle?.set("raffle", raffle)
+                                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                                        "raffle",
+                                        raffle
+                                    )
                                     navController.navigate(AppScreens.RaffleDetail.route)
                                 },
-                            shape = RoundedCornerShape(10.dp),
-                            elevation = CardDefaults.cardElevation(4.dp)
+                            elevation = CardDefaults.cardElevation(6.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = colorResource(id = R.color.back_color) // Fondo personalizado
+                            ),
+                            border = BorderStroke(1.dp, colorResource(id = R.color.primary_color))
                         ) {
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                // 📄 Contenido del Raffle
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // 📝 Textos alineados a la izquierda
                                 Column(
-                                    modifier = Modifier
-                                        .padding(16.dp)
-                                        .align(Alignment.Center),
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                    modifier = Modifier.weight(1f), // ocupa el máximo espacio posible
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     Text(
                                         text = raffle.name,
@@ -163,6 +152,15 @@ fun ActiveRafflesScreen(
                                     Text(text = "Fecha: ${raffle.date}")
                                     Text(text = "Estado: ${raffle.status}")
                                 }
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo_azul), // asegúrate de tener esta imagen en res/drawable
+                                    contentDescription = "Imagen de rifa",
+                                    modifier = Modifier
+                                        .size(64.dp)
+                                        .clip(CircleShape)
+                                )
+
+
                             }
                         }
                     }
