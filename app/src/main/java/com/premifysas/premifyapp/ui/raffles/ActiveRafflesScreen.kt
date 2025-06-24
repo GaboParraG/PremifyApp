@@ -136,6 +136,7 @@ fun ActiveRafflesScreen(
                                     .padding(16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+
                                 // 📝 Textos alineados a la izquierda
                                 Column(
                                     modifier = Modifier.weight(1f), // ocupa el máximo espacio posible
@@ -146,11 +147,13 @@ fun ActiveRafflesScreen(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp
                                     )
-                                    Text(text = "Premio: ${raffle.prize}")
+
+                                    Text(text = "Premio: ${raffle.prize.joinToString(", ").replace("[", "").replace("]", "")}")
                                     Text(text = "Costo: ${raffle.cost}")
                                     Text(text = "Método de pago: ${raffle.payment_method}")
                                     Text(text = "Fecha: ${raffle.date}")
                                     Text(text = "Estado: ${raffle.status}")
+
                                 }
                                 Image(
                                     painter = painterResource(id = R.drawable.logo_azul), // asegúrate de tener esta imagen en res/drawable

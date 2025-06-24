@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ButtonDefaults
@@ -67,6 +68,8 @@ fun RaffleDetailScreen(navController: NavController) {
 
     val selectedNumbers = remember { mutableStateOf(mutableSetOf<Int>()) }
     val isButtonEnabled by remember { derivedStateOf { selectedNumbers.value.isNotEmpty() } }
+
+    val showOnlyAvailable = remember { mutableStateOf(false) }
 
     val raffle = navController.previousBackStackEntry
         ?.savedStateHandle
@@ -196,19 +199,47 @@ fun RaffleDetailScreen(navController: NavController) {
                 ),
                 border = BorderStroke(1.dp, colorResource(id = R.color.primary_color))
             ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (showOnlyAvailable.value) "Activos" else "Todos",
+                        fontSize = 14.sp,
+                        color = colorResource(id = R.color.primary_color),
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                    IconButton(
+                        onClick = {
+                            showOnlyAvailable.value = !showOnlyAvailable.value
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Filtrar números",
+                            tint = colorResource(id = R.color.primary_color),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(5),
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxSize(),
                     content = {
-                        items(100) { index ->
-                            val number = index + 1
-//                            val isLocked = number in lockedNumbers.value
-//                            val isSelected = number in selectedNumbers.value
-//                            val isUsed = usedNumbers.contains(number)
-//                            val isDisabled = isLocked || isUsed
 
+                        val numbersToShow = if (showOnlyAvailable.value) {
+                            (1..100).filterNot { usedNumbers.contains(it) }
+                        } else {
+                            (1..100).toList()
+                        }
+
+                        items(numbersToShow.size) { index ->
+                            val number = numbersToShow[index]
                             val isUsed = usedNumbers.contains(number)
                             val isSelected = selectedNumbers.value.contains(number)
 

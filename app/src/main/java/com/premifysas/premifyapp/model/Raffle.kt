@@ -10,7 +10,7 @@ data class Raffle(
     val image: String = "",
     val design: String = "",
     val payment_method: String = "",
-    val prize: String = "",
+    val prize: List<String> = emptyList() ,
     val type_number: String = "",
     var status: Boolean = false
 ): Serializable

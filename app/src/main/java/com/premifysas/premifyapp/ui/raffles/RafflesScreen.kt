@@ -170,7 +170,7 @@ fun RafflesScreen(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp
                                     )
-                                    Text(text = "Premio: ${raffle.prize}")
+                                    Text(text = "Premio: ${raffle.prize.joinToString(", ").replace("[", "").replace("]", "")}")
                                     Text(text = "Costo: ${raffle.cost}")
                                     Text(text = "Método de pago: ${raffle.payment_method}")
                                     Text(text = "Fecha: ${raffle.date}")

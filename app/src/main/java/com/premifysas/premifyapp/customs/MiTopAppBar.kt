@@ -93,7 +93,21 @@ fun MiTopAppBar(navController: NavController) {
                         )
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Perfil") },
+                            text = { Text("Mi Cuenta") },
+                            onClick = {
+                                menuExpanded = false
+                                navController.navigate(AppScreens.Profile.route)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Politica de Privacidad") },
+                            onClick = {
+                                menuExpanded = false
+                                navController.navigate(AppScreens.Profile.route)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Terminos y Condiciones") },
                             onClick = {
                                 menuExpanded = false
                                 navController.navigate(AppScreens.Profile.route)

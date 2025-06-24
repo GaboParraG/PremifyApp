@@ -1,3 +1,6 @@
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.commons.logging.LogFactory.release
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -23,6 +26,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+
+        getByName("debug") {
+            storeFile = file("C:\\Users\\gabri\\AndroidStudioProjects\\Premify\\app\\keystore\\premify_key.jks")
+            storePassword = "premify12345"
+            keyAlias = "key0"
+            keyPassword = "premify12345"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -30,6 +43,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            // Opcional: usar también firma en debug si lo deseas
         }
     }
     compileOptions {
