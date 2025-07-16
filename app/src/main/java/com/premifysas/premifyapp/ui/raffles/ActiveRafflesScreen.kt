@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -45,10 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.premifysas.premifyapp.R
 import com.premifysas.premifyapp.customs.MiTopAppBar
 import com.premifysas.premifyapp.navigation.AppScreens
 import com.premifysas.premifyapp.ui.theme.Poppins
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -70,7 +74,7 @@ fun ActiveRafflesScreen(
     Scaffold(
 
         topBar = {
-            MiTopAppBar(navController)
+            MiTopAppBar(navController, false)
         }
     )
     { paddingValues ->
@@ -149,21 +153,24 @@ fun ActiveRafflesScreen(
                                     )
 
                                     Text(text = "Premio: ${raffle.prize.joinToString(", ").replace("[", "").replace("]", "")}")
-                                    Text(text = "Costo: ${raffle.cost}")
-                                    Text(text = "Método de pago: ${raffle.payment_method}")
+                                    val formattedCost = NumberFormat.getCurrencyInstance(Locale("es", "CO")).format(raffle.cost)
+                                    Text(text = "Costo: $formattedCost")
                                     Text(text = "Fecha: ${raffle.date}")
-                                    Text(text = "Estado: ${raffle.status}")
+                                    Text(
+                                        text = "Estado: ${if (raffle.status) "Activa" else "Finalizada"}",
+                                        color = if (raffle.status) colorResource(id = R.color.primary_color) else colorResource(id = R.color.delete_color),
+                                        fontWeight = FontWeight.SemiBold
+                                    )
 
                                 }
                                 Image(
-                                    painter = painterResource(id = R.drawable.logo_azul), // asegúrate de tener esta imagen en res/drawable
+                                    painter = rememberAsyncImagePainter(raffle.image),
                                     contentDescription = "Imagen de rifa",
+                                    contentScale = ContentScale.Crop, // o ContentScale.Fit
                                     modifier = Modifier
                                         .size(64.dp)
                                         .clip(CircleShape)
                                 )
-
-
                             }
                         }
                     }

@@ -34,7 +34,7 @@ import com.premifysas.premifyapp.ui.login.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MiTopAppBar(navController: NavController) {
+fun MiTopAppBar(navController: NavController, shouldShowBackButton:Boolean = true) {
 
 
     val viewModel: LoginViewModel = hiltViewModel()
@@ -61,11 +61,13 @@ fun MiTopAppBar(navController: NavController) {
                 )
             },
             navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Atrás"
-                    )
+                if (shouldShowBackButton) {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Atrás"
+                        )
+                    }
                 }
             },
             actions = {

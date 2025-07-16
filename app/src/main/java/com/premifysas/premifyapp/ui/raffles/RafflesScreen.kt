@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -54,11 +57,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.premifysas.premifyapp.R
 import com.premifysas.premifyapp.customs.MiTopAppBar
 import com.premifysas.premifyapp.model.Raffle
 import com.premifysas.premifyapp.navigation.AppScreens
 import com.premifysas.premifyapp.ui.theme.Poppins
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -74,6 +80,8 @@ fun RafflesScreen(
     var showDialog by remember { mutableStateOf(false) }
     var raffleToDelete by remember { mutableStateOf<Raffle?>(null) }
 
+    var selectionMode by remember { mutableStateOf(false) }
+    var selectedRaffles by remember { mutableStateOf(setOf<String>()) }
 
     LaunchedEffect(Unit) {
         viewModel.loadRaffles()
@@ -82,7 +90,7 @@ fun RafflesScreen(
     Scaffold(
 
         topBar = {
-            MiTopAppBar(navController)
+            MiTopAppBar(navController, false)
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -92,14 +100,16 @@ fun RafflesScreen(
                 containerColor = colorResource(id = R.color.primary_color),
                 contentColor = colorResource(id = R.color.white),
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 12.dp)
-            ) { Icon(imageVector = Icons.Filled.Add, contentDescription = "Add") } },
+            )
+
+
+            { Icon(imageVector = Icons.Filled.Add, contentDescription = "Add") } },
             modifier = Modifier
             .fillMaxSize()
             .fillMaxWidth()
             .background(color = colorResource(id = R.color.purple_700))
     )
     { paddingValues ->
-
 
         Column(
             modifier = Modifier
@@ -118,6 +128,28 @@ fun RafflesScreen(
                     fontFamily = Poppins
                 )
             )
+
+            if (selectionMode && selectedRaffles.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .clickable { showDialog = true },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar",
+                        tint = colorResource(id = R.color.primary_color)
+                    )
+                    Text(
+                        text = " Eliminar (${selectedRaffles.size})",
+                        color = colorResource(id = R.color.primary_color),
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
 
             if (isLoading) {
                 Box(
@@ -139,18 +171,50 @@ fun RafflesScreen(
 
                 ) {
                     items(raffles) { raffle ->
+                        val isSelected = selectedRaffles.contains(raffle.id)
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
-                            .clickable {
-                            navController.currentBackStackEntry?.savedStateHandle?.set("raffle", raffle)
-                            navController.navigate(AppScreens.RaffleDetail.route)
-                        },
+
+                                .pointerInput(raffle.id) {
+                                    detectTapGestures(
+                                        onLongPress = {
+                                            // Activar modo selección
+                                            if (!selectionMode) {
+                                                selectionMode = true
+                                            }
+                                            // Agregar si no está ya seleccionado
+                                            if (!selectedRaffles.contains(raffle.id)) {
+                                                selectedRaffles = selectedRaffles + raffle.id
+                                            }
+                                        },
+                                        onTap = {
+                                            if (selectionMode) {
+                                                selectedRaffles = if (selectedRaffles.contains(raffle.id)) {
+                                                    selectedRaffles - raffle.id // Deseleccionar
+                                                } else {
+                                                    selectedRaffles + raffle.id // Seleccionar
+                                                }
+
+                                                if (selectedRaffles.isEmpty()) {
+                                                    selectionMode = false
+                                                }
+                                            } else {
+                                                navController.currentBackStackEntry?.savedStateHandle?.set("raffle", raffle)
+                                                navController.navigate(AppScreens.RaffleDetail.route)
+                                            }
+                                        }
+                                    )
+                                },
+
                             elevation = CardDefaults.cardElevation(6.dp),
                             shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = colorResource(id = R.color.back_color) // Fondo personalizado
+                                containerColor = if (isSelected)
+                                    colorResource(id = R.color.delete_color)
+                                else
+                                    colorResource(id = R.color.back_color)
                             ),
                             border = BorderStroke(1.dp, colorResource(id = R.color.primary_color))
                         ) {
@@ -160,9 +224,8 @@ fun RafflesScreen(
                                     .padding(16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // 📝 Textos alineados a la izquierda
                                 Column(
-                                    modifier = Modifier.weight(1f), // ocupa el máximo espacio posible
+                                    modifier = Modifier.weight(1f),
                                     verticalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     Text(
@@ -171,34 +234,45 @@ fun RafflesScreen(
                                         fontSize = 20.sp
                                     )
                                     Text(text = "Premio: ${raffle.prize.joinToString(", ").replace("[", "").replace("]", "")}")
-                                    Text(text = "Costo: ${raffle.cost}")
-                                    Text(text = "Método de pago: ${raffle.payment_method}")
+                                    val formattedCost = NumberFormat.getCurrencyInstance(Locale("es", "CO")).format(raffle.cost)
+                                    Text(text = "Costo: $formattedCost")
                                     Text(text = "Fecha: ${raffle.date}")
-                                    Text(text = "Estado: ${raffle.status}")
+                                    Text(
+                                        text = "Estado: ${if (raffle.status) "Activa" else "Finalizada"}",
+                                        color = if (raffle.status) colorResource(id = R.color.primary_color) else colorResource(id = R.color.delete_color),
+                                        fontWeight = FontWeight.SemiBold
+                                    )
                                 }
                                 Image(
-                                    painter = painterResource(id = R.drawable.logo_azul), // asegúrate de tener esta imagen en res/drawable
+                                    painter = rememberAsyncImagePainter(raffle.image),
                                     contentDescription = "Imagen de rifa",
+                                    contentScale = ContentScale.Crop,
                                     modifier = Modifier
-                                        .size(64.dp)
-                                        .clip(CircleShape)
+                                        .size(80.dp) // Aumenta el tamaño
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .padding(end = 8.dp) // Más espacio a la derecha
                                 )
                             }
                         }
+
                     }
                 }
             }
         }
     }
 
-    if (showDialog && raffleToDelete != null) {
+    if (showDialog) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("¿Eliminar Rifa?") },
-            text = { Text("¿Estás seguro que deseas eliminar la rifa '${raffleToDelete?.name}'? Esta acción no se puede deshacer.") },
+            title = { Text("¿Eliminar Rifas?") },
+            text = { Text("¿Estás seguro que deseas eliminar las rifas seleccionadas? Esta acción no se puede deshacer.") },
             confirmButton = {
                 Button(onClick = {
-                    viewModel.deleteRaffle(raffleToDelete!!.id)
+                    selectedRaffles.forEach { id ->
+                        viewModel.deleteRaffle(id)
+                    }
+                    selectedRaffles = emptySet()
+                    selectionMode = false
                     showDialog = false
                 }) {
                     Text("Aceptar")

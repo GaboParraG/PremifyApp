@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.premifysas.premifyapp.R
@@ -65,12 +67,9 @@ fun RaffleDetailScreen(navController: NavController) {
 
     val db = Firebase.firestore
     val lockedNumbers = remember { mutableStateOf(setOf<Int>()) }
-
     val selectedNumbers = remember { mutableStateOf(mutableSetOf<Int>()) }
     val isButtonEnabled by remember { derivedStateOf { selectedNumbers.value.isNotEmpty() } }
-
     val showOnlyAvailable = remember { mutableStateOf(false) }
-
     val raffle = navController.previousBackStackEntry
         ?.savedStateHandle
         ?.get<Raffle>("raffle")
@@ -135,7 +134,6 @@ fun RaffleDetailScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-
             Text(
                 modifier = Modifier
                     .padding(top = 16.dp)
@@ -178,12 +176,15 @@ fun RaffleDetailScreen(navController: NavController) {
                         Text(text = "Método de pago: ${raffle.payment_method}", fontSize = 16.sp)
                     }
                     Image(
-                        painter = painterResource(id = R.drawable.logo_azul), // asegúrate de tener esta imagen en res/drawable
+                        painter = rememberAsyncImagePainter(raffle.image),
                         contentDescription = "Imagen de rifa",
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(64.dp)
-                            .clip(CircleShape)
+                            .size(80.dp) // Aumenta el tamaño
+                            .clip(RoundedCornerShape(12.dp))
+                            .padding(end = 8.dp) // Más espacio a la derecha
                     )
+
                 }
 
 
@@ -280,8 +281,6 @@ fun RaffleDetailScreen(navController: NavController) {
                                     )
                                 }
                             }
-
-
                         }
                     }
                 )
